@@ -79,6 +79,10 @@
 - [事業目標・売上計画（お金稼ぐ計画）](./business-goals.md) - 月別売上目標とアクションプラン
 - [資金調達計画（お金借りる計画）](./funding-plan.md) - 融資・資金調達の具体的計画
 
+### 事業戦略（第一弾）
+- [スモールビジネス3本柱](./small-business-plan.md) - 1日15分運用前提のビジネス設計
+- [M&A戦略方針](./ma-strategy.md) - 年商7,000万円を見据えた事業買収戦略
+
 ### マニュアル・運用ガイド
 - [マニュアル一覧](../manuals/README.md)
 - [事業用お金管理・運用計画](../manuals/business-finance-plan.md) - freee × PayPay銀行の運用方針
