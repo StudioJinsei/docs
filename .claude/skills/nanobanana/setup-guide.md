@@ -1,0 +1,239 @@
+# Nanobanana セットアップガイド
+
+**作成日：2025/12/20**
+
+StudioJinseiでNanobanana（Google Gemini API）を使用して画像生成するためのセットアップガイドです。
+
+---
+
+## 📋 利用モデル
+
+| モデル名 | API名 | 特徴 | 料金目安 |
+|---------|-------|------|----------|
+| **Gemini 3 Pro Image** | gemini-3-pro-image-preview | 高品質・高解像度 | 約21-30円/枚 |
+| Gemini 2.5 Flash Image | gemini-2.5-flash-image | 高速・低コスト | 約6円/枚 |
+
+**推奨：** StudioJinseiのロゴやメインビジュアルは **Gemini 3 Pro Image** を使用
+
+---
+
+## 🔧 前提条件
+
+### 必須
+- Google API Key（`GOOGLE_API_KEY`）
+- StudioJinseiリポジトリ
+- Python 3.x
+- google-generativeai パッケージ
+
+### 環境変数
+- `GOOGLE_API_KEY`: あなたのGoogle API Key
+
+---
+
+## ⚙️ セットアップ手順
+
+### 1. StudioJinseiリポジトリをクローン（初回のみ）
+
+```bash
+cd ~/Desktop
+git clone [StudioJinseiリポジトリURL] StudioJinsei
+```
+
+**既にクローン済みの場合はスキップ**
+
+### 2. nanobanana-baseディレクトリに移動
+
+```bash
+cd ~/Desktop/StudioJinsei/docs/nanobanana-base
+```
+
+このディレクトリには以下が含まれています：
+- `brand-foundation.md` - ブランド共通デザイン土台
+- `kotone-character.md` - コトネちゃん設定
+- `SKILL.md` - 画像生成スキル
+- `setup-guide.md` - このファイル
+- `usage-guide.md` - 使い方ガイド
+- `README.md` - 概要
+- `images/reference/` - 参照画像（コトネちゃんのプロフィール画像等）
+
+### 3. Claudeスキルに参照画像を配置（推奨）
+
+新しいリポジトリでClaudeスキルを使用する場合、参照画像をスキルディレクトリに配置します。
+
+#### 3-1. スキルディレクトリを作成
+
+```bash
+# リポジトリのルートで実行
+mkdir -p .claude/skills/kotone-business/images
+mkdir -p .claude/skills/kotone-character/images
+mkdir -p .claude/skills/kotone-personal/images
+```
+
+#### 3-2. 参照画像をコピー
+
+```bash
+# nanobanana-baseから参照画像をコピー
+cp ~/Desktop/StudioJinsei/docs/nanobanana-base/images/reference/* .claude/skills/kotone-business/images/
+cp ~/Desktop/StudioJinsei/docs/nanobanana-base/images/reference/* .claude/skills/kotone-character/images/
+cp ~/Desktop/StudioJinsei/docs/nanobanana-base/images/reference/* .claude/skills/kotone-personal/images/
+```
+
+これで、各スキルから `images/line-profile.jpg` や `images/officialprofile.PNG` を参照できるようになります。
+
+**注意：** スキルファイル（`SKILL.md`）内で参照画像のパスを `images/line-profile.jpg` のように相対パスで指定してください。
+
+### 4. 環境変数を設定
+
+#### macOS/Linux（zsh）の場合
+```bash
+# ~/.zshrc を編集
+nano ~/.zshrc
+
+# 以下を追加
+export GOOGLE_API_KEY="AIzaSyBs2FQS6FYWwx9LKQdyywkBFTEXt5tK9Z8"
+
+# 設定を反映
+source ~/.zshrc
+```
+
+#### 確認
+```bash
+echo $GOOGLE_API_KEY
+```
+
+### 5. Pythonパッケージをインストール
+
+```bash
+pip install google-generativeai
+```
+
+または
+
+```bash
+pip3 install google-generativeai
+```
+
+---
+
+## 🚀 基本的な使い方
+
+### 方法1：Pythonスクリプトで生成（推奨）
+
+後述の「画像生成スクリプト例」を参照して、Pythonスクリプトを作成します。
+
+### 方法2：Google AI Studioで生成（手動）
+
+1. [Google AI Studio](https://aistudio.google.com/) にアクセス
+2. プロンプトを入力して生成
+3. 生成画像をダウンロード
+
+**推奨：** スクリプトを使った方が効率的
+
+---
+
+## 💻 画像生成スクリプト例
+
+### 基本的なスクリプト
+
+`generate_image.py` を作成：
+
+```python
+import google.generativeai as genai
+import os
+from pathlib import Path
+
+# API設定
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+
+# モデル選択（高品質版）
+model = genai.GenerativeModel("gemini-3-pro-image-preview")
+
+# プロンプトを読み込む
+with open("prompt.txt", "r") as f:
+    prompt = f.read()
+
+# 画像生成
+print("画像生成中...")
+response = model.generate_content(prompt)
+
+# 保存
+output_path = Path("output.png")
+if response.candidates and response.candidates[0].content.parts:
+    image_data = response.candidates[0].content.parts[0].inline_data.data
+    output_path.write_bytes(image_data)
+    print(f"画像を保存しました: {output_path}")
+else:
+    print("画像生成に失敗しました")
+```
+
+### 使い方
+
+```bash
+# プロンプトファイルを作成
+nano prompt.txt
+
+# スクリプト実行
+python3 generate_image.py
+```
+
+**詳細は [SKILL.md](./SKILL.md) を参照**
+
+---
+
+## 🔍 トラブルシューティング
+
+### GOOGLE_API_KEY エラー
+```bash
+# 環境変数を確認
+echo $GOOGLE_API_KEY
+
+# 設定されていない場合
+export GOOGLE_API_KEY="AIzaSyBs2FQS6FYWwx9LKQdyywkBFTEXt5tK9Z8"
+```
+
+### 画像生成失敗
+- プロンプトが長すぎる場合は短くする
+- 参照画像が多すぎる場合は減らす（最大14枚）
+- APIレート制限の場合は少し待つ
+
+### 絵柄が安定しない
+- プロンプトにスタイル指定を詳細に含める
+- 同じプロンプト基盤（[StudioJinsei Brand Foundation]）を使う
+
+---
+
+## 📊 API料金目安
+
+| 解像度相当 | 1枚あたりの料金 |
+|----------|----------------|
+| 1K (1024x1024) | 約21円 |
+| 2K (2048x2048) | 約42円 |
+| 4K (4096x4096) | 約85円 |
+
+**StudioJinseiのロゴ生成例：**
+- ロゴ案3パターン = 約63円
+- 気に入ったロゴを高解像度で再生成 = 約85円
+- **合計：約150円**
+
+---
+
+## 📝 変更があった場合
+
+**このStudioJinseiリポジトリのnanobanana-baseディレクトリだけを更新すればOK！**
+
+```bash
+cd ~/Desktop/StudioJinsei
+git pull
+```
+
+すべての設定・プロンプト・ガイドがこのディレクトリに含まれているので、他のリポジトリは不要です。
+
+---
+
+## 🔗 関連リンク
+
+- [ブランド共通デザイン土台](./brand-foundation.md)
+- [コトネちゃん設定](./kotone-character.md)
+- [使い方ガイド](./usage-guide.md)
+- [SKILL.md](./SKILL.md)
+- [README](./README.md)

@@ -164,7 +164,8 @@ High quality, modern design.
 
 | 用途 | パス |
 |------|------|
-| スタイル参照 | `docs/images/profile/2CE87205-2E94-485D-BDD4-860A88E1C6D8.PNG` |
+| LINEプロフィール画像 | `images/line-profile.jpg` |
+| 公式プロフィール画像 | `images/officialprofile.PNG` |
 
 ## 関連スキル
 
